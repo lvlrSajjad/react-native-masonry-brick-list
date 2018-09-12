@@ -4,7 +4,8 @@
 this is a  staggered List view for react native (pure Js)
 
 
-![](screen.gif)
+<img src="https://raw.githubusercontent.com/lvlrSajjad/sajjad-brick-list/master/screen..gif" >
+
 ## Installation
 
 `$ npm install sajjad-brick-list --save`
