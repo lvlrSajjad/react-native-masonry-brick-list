@@ -1,0 +1,40 @@
+
+{
+  "name": "sajjad-brick-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native",
+    "sajjad-brick-list",
+    "brick-list",
+    "staggered-grid",
+    "staggered",
+    "grid",
+    "staggered-list",
+    "list"
+  ],
+  "maintainers": [
+    {
+      "name": "lvlrsajjad",
+      "email": "lvlr.xaus@gmail.com"
+    }
+  ],
+   "_npmUser": {
+    "name": "lvlrsajjad",
+    "email": "lvlr.xaus@gmail.com"
+  },
+  "author": {
+    "name": "Sajjad Asadi",
+    "email": "lvlr.xaus@gmail.com"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": "^0.41.2",
+    "react-native-windows": "0.41.0-rc.1"
+
+  }
+}
