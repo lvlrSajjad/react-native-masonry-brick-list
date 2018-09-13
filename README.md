@@ -16,11 +16,10 @@ just be sure that in your list id and span is specified
 
 and use it as below
 
-Props: 
-    data (array)
-    renderItem (react Component)
-    columns (int)
-    rowHeight (int)
+Props{data (array),
+    renderItem (react Component),
+    columns (int),
+    rowHeight (int) }
 
 ```javascript
 import SajjadBrickList from 'sajjad-brick-list';
