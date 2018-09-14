@@ -1,5 +1,5 @@
 
-# react-native-brick-list [![npm version](https://img.shields.io/npm/v/sajjad-brick-list.svg)](https://www.npmjs.com/package/sajjad-brick-list) [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/test_coverage)
+# react-native-masonry-brick-list [![npm version](https://img.shields.io/npm/v/react-native-masonry-brick-list.svg)](https://www.npmjs.com/package/react-native-masonry-brick-list) [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/test_coverage)
 
 
 this is a  staggered List view for react native (pure Js)
@@ -9,7 +9,7 @@ this is a  staggered List view for react native (pure Js)
 
 ## Installation
 
-`$ npm install sajjad-brick-list --save`
+`$ npm install react-native-masonry-brick-list --save`
 
 
 ## Usage
@@ -23,7 +23,7 @@ Props{data (array),
     rowHeight (int) }
 
 ```javascript
-import BrickList from 'sajjad-brick-list';
+import BrickList from 'react-native-masonry-brick-list';
 import React, {Component} from 'react';
 import {View, Text} from 'react-native'
 
