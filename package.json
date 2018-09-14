@@ -1,6 +1,6 @@
 
 {
-  "name": "sajjad-brick-list",
+  "name": "react-native-brick-list",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -15,7 +15,12 @@
     "staggered",
     "grid",
     "staggered-list",
-    "list"
+    "list",
+	"react native list",
+	"react native masonary",
+	"react-native masonary list",
+	"masonary list",
+	"staggered list"
   ],
   "maintainers": [
     {
