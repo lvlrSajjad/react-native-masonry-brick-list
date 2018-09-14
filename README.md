@@ -9,7 +9,7 @@ this is a  staggered List view for react native (pure Js)
 
 ## Installation
 
-`$ npm install sajjad-brick-list --save`
+`$ npm react-native-brick-list --save`
 
 
 ## Usage
@@ -23,7 +23,7 @@ Props{data (array),
     rowHeight (int) }
 
 ```javascript
-import SajjadBrickList from 'sajjad-brick-list';
+import BrickList from 'react-native-brick-list';
 import React, {Component} from 'react';
 import {View, Text} from 'react-native'
 
@@ -57,7 +57,7 @@ export default class App extends Component<Props> {
 
     render() {
         return (
-            <SajjadBrickList
+            <BrickList
             data = {this.state.data}
             renderItem={(prop)=>renderView(prop)}
             columns = {3}
