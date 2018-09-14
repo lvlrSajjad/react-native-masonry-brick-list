@@ -1,5 +1,5 @@
 
-# sajjad-brick-list [![npm version](https://img.shields.io/npm/v/sajjad-brick-list.svg)](https://www.npmjs.com/package/sajjad-brick-list) [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/maintainability)
+# sajjad-brick-list [![npm version](https://img.shields.io/npm/v/sajjad-brick-list.svg)](https://www.npmjs.com/package/sajjad-brick-list) [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/test_coverage)
 
 
 this is a  staggered List view for react native (pure Js)
