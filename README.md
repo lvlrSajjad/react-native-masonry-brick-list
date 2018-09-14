@@ -9,7 +9,7 @@ this is a  staggered List view for react native (pure Js)
 
 ## Installation
 
-`$ npm react-native-brick-list --save`
+`$ npm install react-native-brick-list --save`
 
 
 ## Usage
