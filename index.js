@@ -7,7 +7,7 @@ export default (props) => <ScrollView>
     <View style={styles.container}>
         {props.data.map((prop) => {
           return <View key={prop.id} style={{
-                width: (width / props.columns) * prop.span,
+                width: (100 / props.columns) * prop.span+'%',
                 height: props.rowHeight === undefined ? width/props.columns : props.rowHeight
             }} >
 
