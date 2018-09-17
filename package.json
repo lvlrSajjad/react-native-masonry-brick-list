@@ -1,7 +1,7 @@
 
 {
   "name": "react-native-masonry-brick-list",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,9 @@
   "keywords": [
     "react-native",
     "sajjad-brick-list",
-	  "react-native-masonry",
+	"react-native-masonry",
+	"react-native-list",
+	"react-native-staggered",
     "brick-list",
     "staggered-grid",
     "staggered",
@@ -19,8 +21,8 @@
     "list",
 	"react native list",
 	"react native masonry",
-	"react-native masonary list",
-	"masonary list",
+	"react-native masonry list",
+	"masonry list",
 	"staggered list"
   ],
   "maintainers": [
@@ -37,10 +39,10 @@
     "name": "Sajjad Asadi",
     "email": "lvlr.xaus@gmail.com"
   },
+  "homepage": "https://github.com/lvlrSajjad/react-native-masonry-brick-list",
   "license": "MIT",
   "peerDependencies": {
     "react-native": "^0.41.2",
     "react-native-windows": "0.41.0-rc.1"
-
   }
 }
