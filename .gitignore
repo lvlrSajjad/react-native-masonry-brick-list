@@ -8,7 +8,10 @@
 node_modules/
 npm-debug.log
 yarn-error.log
-  
+
+# Lockfiles (library: dependents resolve their own)
+package-lock.json
+yarn.lock
 
 # Xcode
 #
@@ -29,7 +32,6 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
-      
 
 # Android/IntelliJ
 #
@@ -43,4 +45,3 @@ local.properties
 buck-out/
 \.buckd/
 *.keystore
-      

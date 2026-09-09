@@ -1,85 +1,147 @@
+# react-native-masonry-brick-list
 
-# react-native-masonry-brick-list [![npm version](https://img.shields.io/npm/v/react-native-masonry-brick-list.svg)](https://www.npmjs.com/package/react-native-masonry-brick-list) [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/lvlrSajjad/sajjad-brick-list/test_coverage)
+[![npm version](https://img.shields.io/npm/v/react-native-masonry-brick-list.svg)](https://www.npmjs.com/package/react-native-masonry-brick-list)
+[![CI](https://github.com/lvlrSajjad/react-native-masonry-brick-list/actions/workflows/ci.yml/badge.svg)](https://github.com/lvlrSajjad/react-native-masonry-brick-list/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/react-native-masonry-brick-list.svg)](./LICENSE)
 
+A staggered / masonry list view for React Native, written in pure JS. No native
+modules, no linking — works on iOS, Android, Web and Expo.
 
-this is a  staggered List view for react native (pure Js)
-
-
-<img src="https://raw.githubusercontent.com/lvlrSajjad/sajjad-brick-list/master/screen.gif" >
+<img src="https://raw.githubusercontent.com/lvlrSajjad/react-native-masonry-brick-list/master/screen.gif" width="300">
 
 ## Installation
 
-`$ npm install react-native-masonry-brick-list --save`
+```bash
+npm install react-native-masonry-brick-list
+```
 
+Requires React 16.8+ and React Native 0.61+ (for `useWindowDimensions`).
+TypeScript definitions are bundled — nothing extra to install.
 
 ## Usage
-just be sure that in your list id and span is specified
 
-and use it as below
+Each item is placed on a grid `columns` wide. Give it a `span` to make it wider
+and a `rowSpan` to make it taller; both default to `1`.
 
-Props{data (array),
-    renderItem (react Component),
-    columns (int),
-    rowHeight (int) }
-
-```javascript
+```jsx
+import React from 'react';
+import { View, Text } from 'react-native';
 import BrickList from 'react-native-masonry-brick-list';
-import React, {Component} from 'react';
-import {View, Text} from 'react-native'
 
+const data = [
+    { id: '1', name: 'Red', color: '#f44336', span: 1 },
+    { id: '2', name: 'Pink', color: '#E91E63', span: 2 },
+    { id: '3', name: 'Purple', color: '#9C27B0', span: 3 },
+    { id: '4', name: 'Deep Purple', color: '#673AB7', span: 1, rowSpan: 2 },
+    { id: '5', name: 'Indigo', color: '#3F51B5', span: 1 },
+    { id: '6', name: 'Blue', color: '#2196F3', span: 1 },
+];
 
-type Props = {};
-export default class App extends Component<Props> {
-    constructor(props){
-        super(props);
-        this.state={
-            //Just id (unique) and span (1,2,3, ...) is required
-            data:[
-                {id: '1', name: "Red", color: "#f44336", span: 1},
-                {id: '2', name: "Pink", color: "#E91E63", span: 2},
-                {id: '3', name: "Purple", color: "#9C27B0", span: 3},
-                {id: '4', name: "Deep Purple", color: "#673AB7", span: 1},
-                {id: '5', name: "Indigo", color: "#3F51B5", span: 1},
-                {id: '6', name: "Blue", color: "#2196F3", span: 1},
-                {id: '7', name: "Light Blue", color: "#03A9F4", span: 3},
-                {id: '8', name: "Cyan", color: "#00BCD4", span: 2},
-                {id: '9', name: "Teal", color: "#009688", span: 1},
-                {id: '10', name: "Green", color: "#4CAF50", span: 1},
-                {id: '11', name: "Light Green", color: "#8BC34A", span: 2},
-                {id: '12', name: "Lime", color: "#CDDC39", span: 3},
-                {id: '13', name: "Yellow", color: "#FFEB3B", span: 2},
-                {id: '14', name: "Amber", color: "#FFC107", span: 1},
-                {id: '15', name: "Orange", color: "#FF5722", span: 3},
-            ],
-        }
-    }
-
-
-    render() {
-        return (
-            <BrickList
-            data = {this.state.data}
-            renderItem={(prop)=>renderView(prop)}
-            columns = {3}
-            />
-        );
-    }
-}
-//RenderAnyItem
-renderView=(prop)=>{
-    return(
-        <View key={prop.id} style={{
+const renderItem = (item) => (
+    <View
+        style={{
+            flex: 1,
             margin: 2,
             borderRadius: 2,
-            backgroundColor: prop.color,
-            flex:1,
-            alignItems:'center',
-            justifyContent:'center',
-        }} >
-            <Text style={{color:'white'}}>{prop.name}</Text>
-        </View>
-    )
-};
+            backgroundColor: item.color,
+            alignItems: 'center',
+            justifyContent: 'center',
+        }}
+    >
+        <Text style={{ color: 'white' }}>{item.name}</Text>
+    </View>
+);
 
+export default function App() {
+    return <BrickList data={data} renderItem={renderItem} columns={3} />;
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | `Array<object>` | `[]` | Items to render. Each should have a unique `id`. |
+| `renderItem` | `(item, index) => ReactNode` | — | **Required.** Renders one item into its cell. |
+| `columns` | `number` | `3` | Number of grid columns. |
+| `rowHeight` | `number` | window width / `columns` | Height of one grid row, in points. |
+| `keyExtractor` | `(item, index) => string` | `item.id`, else the index | Key for each cell. |
+| `containerStyle` | `ViewStyle` | — | Style for the grid container. |
+| `ListHeaderComponent` | element or component | — | Rendered above the grid. |
+| `ListFooterComponent` | element or component | — | Rendered below the grid. |
+
+Any other prop is forwarded to the underlying `ScrollView`, so
+`refreshControl`, `onScroll`, `showsVerticalScrollIndicator`,
+`contentContainerStyle` and friends all work.
+
+### Item shape
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string \| number` | — | Unique key. Falls back to the array index. |
+| `span` | `number` | `1` | Columns the item occupies, clamped to `columns`. |
+| `rowSpan` | `number` | `1` | Rows the item occupies. |
+
+## How placement works
+
+Items are placed row by row with a cursor that only moves forward — the same
+rule CSS grid uses for non-dense auto placement. An item that doesn't fit in
+the space left on the current row moves to the next one, leaving the remainder
+empty rather than pulling a later item back to fill it. That keeps your data
+order and the visual order identical.
+
+`rowSpan` makes an item occupy several rows; later items flow around the space
+it takes.
 
 ```
+data:  [A rowSpan 2] [B] [C] [D] [E span 2]
+
+┌─────┬─────┬─────┐
+│     │  B  │  C  │
+│  A  ├─────┼─────┤   A takes two rows, so D shifts
+│     │  D  │     │   right. E needs two columns and
+├─────┴─────┼─────┤   only one is left, so it starts
+│     E     │     │   a new row.
+└───────────┴─────┘
+```
+
+## Header and footer
+
+```jsx
+<BrickList
+    data={data}
+    renderItem={renderItem}
+    ListHeaderComponent={<Text>Colors</Text>}
+    ListFooterComponent={() => <Button title="Load more" onPress={loadMore} />}
+/>
+```
+
+## Custom layouts
+
+The placement algorithm is exported on its own if you want to build a different
+renderer on top of it:
+
+```js
+import { computeLayout } from 'react-native-masonry-brick-list';
+
+const { cells, rows } = computeLayout(data, 3);
+// cells: [{ item, index, row, col, colSpan, rowSpan }, ...]
+```
+
+## Notes
+
+- The grid is rendered inside a `ScrollView`, so every item is mounted at once.
+  For very long lists (thousands of items), paginate your `data`.
+- `rowHeight` defaults to a value derived from the window width and updates on
+  rotation and on window resize.
+
+## Contributing
+
+```bash
+npm install
+npm test
+```
+
+## License
+
+MIT © [Sajjad Asadi](https://github.com/lvlrSajjad)
