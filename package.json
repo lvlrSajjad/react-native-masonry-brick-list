@@ -45,6 +45,10 @@
     "email": "lvlr.xaus@gmail.com"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-native": ">=0.61.0"

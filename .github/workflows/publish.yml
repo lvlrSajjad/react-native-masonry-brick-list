@@ -1,0 +1,61 @@
+name: Publish
+
+# Publishes to npm via trusted publishing (OIDC) — no NPM_TOKEN secret needed.
+#
+# The npm side is configured per package, not per account, at:
+#   https://www.npmjs.com/package/react-native-masonry-brick-list/access
+# Under "Trusted publisher" the fields must match this file exactly
+# (they are case-sensitive):
+#   Organization or user: lvlrSajjad
+#   Repository:           react-native-masonry-brick-list
+#   Workflow filename:    publish.yml     <- filename only, not the path
+#   Environment:          (leave empty)
+#
+# To cut a release: bump the version in package.json, commit, then publish a
+# GitHub Release tagged v<version>. The tag and package.json must agree; the
+# job checks and fails loudly if they drift.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # lets npm trade a GitHub OIDC token for a short-lived publish token
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Trusted publishing needs Node >= 22.14.
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      # Node bundles an npm too old to understand OIDC; 11.5.1+ is required.
+      - run: npm install -g npm@latest
+      - run: node --version && npm --version
+
+      # No lockfile is committed (see .gitignore), so `npm ci` is not an
+      # option. --legacy-peer-deps for the same reason as in ci.yml.
+      - run: npm install --legacy-peer-deps
+
+      - run: npm test
+
+      - name: Check the tag matches package.json
+        if: github.event_name == 'release'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Release tag $GITHUB_REF_NAME implies $TAG but package.json says $PKG"
+            exit 1
+          fi
+          echo "Publishing $PKG"
+
+      # Provenance comes from publishConfig.provenance in package.json.
+      - run: npm publish
