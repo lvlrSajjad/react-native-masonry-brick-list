@@ -138,9 +138,13 @@ const { cells, rows } = computeLayout(data, 3);
 ## Contributing
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 npm test
 ```
+
+`--legacy-peer-deps` keeps npm from installing the peer dependencies. The tests
+mock `react-native` (see `test-utils/react-native-mock.js`), so pulling in the
+real thing only drags in whichever React version the newest RN peers on.
 
 ## License
 

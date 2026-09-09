@@ -9,6 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [18.x, 20.x, 22.x]
     steps:
@@ -16,5 +17,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
+      # --legacy-peer-deps skips resolving the root peerDependencies. They are
+      # a declaration for consumers, not something the tests need: react-native
+      # is mocked (see test-utils/react-native-mock.js), and installing it here
+      # would drag in whichever React version the newest RN happens to peer on.
+      - run: npm install --legacy-peer-deps
       - run: npm test
