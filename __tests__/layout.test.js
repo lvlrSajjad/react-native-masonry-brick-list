@@ -100,4 +100,23 @@ describe('computeLayout', () => {
         expect(computeLayout([{ span: 2 }, {}], 0).cells.map((c) => c.col)).toEqual([0, 0]);
         expect(computeLayout([{}, {}], undefined).rows).toBe(2);
     });
+
+    it('backfills earlier holes when dense', () => {
+        const data = [{ span: 2 }, { span: 2 }, {}, { rowSpan: 2 }, {}];
+        const sparse = computeLayout(data, 3);
+        const dense = computeLayout(data, 3, { dense: true });
+
+        expect(at(sparse.cells, 2)).toEqual([1, 2, 1, 1]);
+        expect(at(dense.cells, 2)).toEqual([0, 2, 1, 1]);
+        expect(at(dense.cells, 3)).toEqual([1, 2, 1, 2]);
+        expect(at(dense.cells, 4)).toEqual([2, 0, 1, 1]);
+        expect(dense.rows).toBe(3);
+    });
+
+    it('treats null items as 1x1', () => {
+        const { cells } = computeLayout([null, { span: 2 }], 3);
+
+        expect(at(cells, 0)).toEqual([0, 0, 1, 1]);
+        expect(cells[0].item).toBeNull();
+    });
 });

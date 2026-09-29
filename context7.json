@@ -1,0 +1,20 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "react-native-masonry-brick-list",
+  "description": "Pure-JS masonry / staggered grid (brick list) for React Native and Expo. Items span multiple columns (span) and rows (rowSpan) on a fixed-column grid, with gap, dense packing, infinite scroll and TypeScript types. No native modules.",
+  "folders": [],
+  "excludeFolders": ["__tests__", "test-utils", "node_modules", "example/node_modules", "example/ios", "example/android", ".github"],
+  "excludeFiles": ["package-lock.json"],
+  "rules": [
+    "Import the default export: `import BrickList from 'react-native-masonry-brick-list'`. `computeLayout` is a named export.",
+    "Every item needs a unique `id` (string or number), or pass `keyExtractor`. Size items with `span` (columns, default 1) and `rowSpan` (rows, default 1) on the data item itself, not in renderItem.",
+    "renderItem is called as `renderItem(item, index, cell)` — positional arguments, NOT FlatList's `({ item, index })` object. `cell` is `{ row, col, colSpan, rowSpan }`.",
+    "The item content should fill its cell: give the root view returned by renderItem `flex: 1`. Use the `gap` prop for spacing instead of margins inside renderItem.",
+    "`rowHeight` defaults to one column's width so 1x1 items are square. Set it explicitly for fixed-height rows.",
+    "BrickList renders into a ScrollView and mounts every item; it is not virtualized. For long feeds, paginate with `onEndReached` instead of passing thousands of items.",
+    "Unknown props are forwarded to the ScrollView (refreshControl, contentContainerStyle, onScroll...), and a ref points at the ScrollView (ref.current.scrollTo).",
+    "`dense` backfills holes left by larger items (CSS grid-auto-flow: dense) but visual order may then differ from data order.",
+    "Do not use `horizontal`; the grid only scrolls vertically."
+  ],
+  "previousVersions": [{ "tag": "v2.0.0" }]
+}

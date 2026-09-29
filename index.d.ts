@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
+import { ScrollView, ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
 
 export interface BrickListItem {
     /** Unique key for the item. Falls back to the array index when absent. */
@@ -26,16 +26,34 @@ export interface Layout<ItemT> {
     rows: number;
 }
 
+export interface LayoutOptions {
+    /**
+     * Backfill holes left by earlier, larger items (CSS `grid-auto-flow:
+     * dense`). Visual order may then differ from data order. Defaults to false.
+     */
+    dense?: boolean;
+}
+
 export interface BrickListProps<ItemT extends BrickListItem = BrickListItem>
     extends ScrollViewProps {
     /** Items to lay out. */
     data: ReadonlyArray<ItemT>;
-    /** Renders a single item into its grid cell. */
-    renderItem: (item: ItemT, index: number) => React.ReactNode;
+    /**
+     * Renders a single item into its grid cell. The third argument says where
+     * the item was placed.
+     */
+    renderItem: (item: ItemT, index: number, cell: PlacedCell<ItemT>) => React.ReactNode;
     /** Number of grid columns. Defaults to 3. */
     columns?: number;
-    /** Height of one grid row in points. Defaults to window width / columns. */
+    /**
+     * Height of one grid row in points. Defaults to the width of one column,
+     * so 1x1 items are square.
+     */
     rowHeight?: number;
+    /** Space between cells, in points. Outer cells stay flush. Defaults to 0. */
+    gap?: number;
+    /** Backfill holes left by earlier, larger items. Defaults to false. */
+    dense?: boolean;
     /** Key for each cell. Defaults to `item.id`, then the array index. */
     keyExtractor?: (item: ItemT, index: number) => string;
     /** Style applied to the grid container. */
@@ -44,6 +62,15 @@ export interface BrickListProps<ItemT extends BrickListItem = BrickListItem>
     ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
     /** Rendered below the grid, inside the ScrollView. */
     ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null;
+    /** Rendered instead of the grid when `data` is empty. */
+    ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
+    /** Called once each time the scroll position gets within `onEndReachedThreshold` of the end. */
+    onEndReached?: (info: { distanceFromEnd: number }) => void;
+    /**
+     * How far from the end, in multiples of the visible height, to call
+     * `onEndReached`. Defaults to 0.5.
+     */
+    onEndReachedThreshold?: number;
 }
 
 /**
@@ -53,11 +80,13 @@ export interface BrickListProps<ItemT extends BrickListItem = BrickListItem>
 export function computeLayout<ItemT extends BrickListItem = BrickListItem>(
     data: ReadonlyArray<ItemT>,
     columns: number,
+    options?: LayoutOptions,
 ): Layout<ItemT>;
 
-declare function BrickList<ItemT extends BrickListItem = BrickListItem>(
-    props: BrickListProps<ItemT>,
-): React.ReactElement | null;
+/** A ref to BrickList is a ref to its underlying ScrollView. */
+declare const BrickList: <ItemT extends BrickListItem = BrickListItem>(
+    props: BrickListProps<ItemT> & React.RefAttributes<ScrollView>,
+) => React.ReactElement | null;
 
 export { BrickList };
 export default BrickList;

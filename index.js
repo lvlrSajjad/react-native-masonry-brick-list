@@ -17,20 +17,36 @@ const renderExtra = (Component) => {
 const defaultKeyExtractor = (item, index) =>
     item && item.id !== undefined && item.id !== null ? String(item.id) : String(index);
 
-const BrickList = ({
-    data = [],
-    renderItem,
-    columns = 3,
-    rowHeight,
-    keyExtractor = defaultKeyExtractor,
-    containerStyle,
-    ListHeaderComponent,
-    ListFooterComponent,
-    ...scrollViewProps
-}) => {
-    const { width } = useWindowDimensions();
+const BrickList = React.forwardRef(function BrickList(
+    {
+        data = [],
+        renderItem,
+        columns = 3,
+        rowHeight,
+        gap = 0,
+        dense = false,
+        keyExtractor = defaultKeyExtractor,
+        containerStyle,
+        ListHeaderComponent,
+        ListFooterComponent,
+        ListEmptyComponent,
+        onEndReached,
+        onEndReachedThreshold = 0.5,
+        ...scrollViewProps
+    },
+    ref,
+) {
+    const { width: windowWidth } = useWindowDimensions();
+    // Width of the grid itself, measured once it has laid out. Until then the
+    // window width stands in, which is exact for the common full-width list.
+    const [measuredWidth, setMeasuredWidth] = React.useState(null);
     const columnCount = Math.max(1, Math.floor(columns) || 1);
-    const unitHeight = rowHeight === undefined ? width / columnCount : rowHeight;
+    const spacing = Math.max(0, Number(gap) || 0);
+    const gridWidth = measuredWidth === null ? windowWidth : measuredWidth;
+    const unitHeight =
+        rowHeight === undefined
+            ? Math.max(0, (gridWidth - (columnCount - 1) * spacing) / columnCount)
+            : rowHeight;
 
     if (isDev) {
         if (!Array.isArray(data)) {
@@ -50,34 +66,114 @@ const BrickList = ({
         }
     }
 
-    const { cells, rows } = computeLayout(data, columnCount);
+    const { cells, rows } = React.useMemo(
+        () => computeLayout(data, columnCount, { dense }),
+        [data, columnCount, dense],
+    );
+
+    // The grid is drawn gap/2 larger than its box on every side and each cell
+    // is inset by gap/2, so neighbours end up exactly `gap` apart while the
+    // outer cells sit flush with the container. That keeps horizontal
+    // positions in percentages, correct before the first layout pass.
     // Divide before scaling so a full-width cell lands on exactly '100%'
     // instead of a float a hair over it.
     const pct = (span) => (span / columnCount) * 100 + '%';
+    const pitch = unitHeight + spacing;
+    const inset = spacing / 2;
+
+    const handleGridLayout = (event) => {
+        const next = event.nativeEvent.layout.width - spacing;
+        setMeasuredWidth((prev) => (prev === next ? prev : next));
+    };
+
+    // onEndReached bookkeeping. `firedAt` is the content height the callback
+    // last fired for, so it fires once per page of data rather than on every
+    // scroll event past the threshold.
+    const metrics = React.useRef({ offset: 0, visible: 0, content: 0, firedAt: null });
+    const checkEndReached = () => {
+        const m = metrics.current;
+        if (!onEndReached || m.visible <= 0 || m.content <= 0) {
+            return;
+        }
+        const distanceFromEnd = m.content - m.visible - m.offset;
+        if (distanceFromEnd <= onEndReachedThreshold * m.visible && m.firedAt !== m.content) {
+            m.firedAt = m.content;
+            onEndReached({ distanceFromEnd });
+        }
+    };
+
+    const endReachedProps = {};
+    if (onEndReached) {
+        const { onScroll, onLayout, onContentSizeChange } = scrollViewProps;
+        endReachedProps.scrollEventThrottle =
+            scrollViewProps.scrollEventThrottle === undefined ? 16 : scrollViewProps.scrollEventThrottle;
+        endReachedProps.onScroll = (event) => {
+            const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+            metrics.current.offset = contentOffset.y;
+            metrics.current.content = contentSize.height;
+            metrics.current.visible = layoutMeasurement.height;
+            checkEndReached();
+            if (onScroll) {
+                onScroll(event);
+            }
+        };
+        endReachedProps.onLayout = (event) => {
+            metrics.current.visible = event.nativeEvent.layout.height;
+            checkEndReached();
+            if (onLayout) {
+                onLayout(event);
+            }
+        };
+        endReachedProps.onContentSizeChange = (contentWidth, contentHeight) => {
+            metrics.current.content = contentHeight;
+            checkEndReached();
+            if (onContentSizeChange) {
+                onContentSizeChange(contentWidth, contentHeight);
+            }
+        };
+    }
+
+    const isEmpty = cells.length === 0;
 
     return (
-        <ScrollView {...scrollViewProps}>
+        <ScrollView ref={ref} {...scrollViewProps} {...endReachedProps}>
             {renderExtra(ListHeaderComponent)}
-            <View style={[styles.container, { height: rows * unitHeight }, containerStyle]}>
-                {cells.map(({ item, index, row, col, colSpan, rowSpan }) => (
+            {isEmpty && ListEmptyComponent ? (
+                renderExtra(ListEmptyComponent)
+            ) : (
+                <View style={[styles.container, containerStyle]}>
                     <View
-                        key={keyExtractor(item, index)}
+                        onLayout={handleGridLayout}
                         style={{
-                            position: 'absolute',
-                            left: pct(col),
-                            top: row * unitHeight,
-                            width: pct(colSpan),
-                            height: rowSpan * unitHeight,
+                            alignSelf: 'stretch',
+                            height: rows * pitch,
+                            margin: rows > 0 && inset > 0 ? -inset : 0,
                         }}
                     >
-                        {typeof renderItem === 'function' ? renderItem(item, index) : null}
+                        {cells.map((cell) => (
+                            <View
+                                key={keyExtractor(cell.item, cell.index)}
+                                style={{
+                                    position: 'absolute',
+                                    left: pct(cell.col),
+                                    top: cell.row * pitch,
+                                    width: pct(cell.colSpan),
+                                    height: cell.rowSpan * pitch,
+                                    padding: inset,
+                                }}
+                            >
+                                {typeof renderItem === 'function'
+                                    ? renderItem(cell.item, cell.index, cell)
+                                    : null}
+                            </View>
+                        ))}
                     </View>
-                ))}
-            </View>
+                </View>
+            )}
             {renderExtra(ListFooterComponent)}
         </ScrollView>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {

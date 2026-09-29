@@ -16,12 +16,19 @@ const cellKey = (row, col) => row + ':' + col;
  * has a `rowSpan` of 1 this produces exactly the flex-wrap layout that
  * versions <= 1.0.3 produced, so upgrading does not reflow existing lists.
  *
+ * With `dense`, the cursor instead restarts at the top for every item, so a
+ * later, smaller item backfills a hole an earlier, larger one left behind —
+ * CSS grid's `grid-auto-flow: dense`. Visual order can then differ from data
+ * order.
+ *
  * @param {Array<object>} data items to place
  * @param {number} columns number of grid columns
+ * @param {{dense?: boolean}} [options]
  * @returns {{cells: Array<object>, rows: number}} placed cells and the total
  *   number of grid rows the layout occupies
  */
-export const computeLayout = (data, columns) => {
+export const computeLayout = (data, columns, options) => {
+    const dense = Boolean(options && options.dense);
     const columnCount = Math.max(1, Math.floor(columns) || 1);
     const occupied = new Set();
     const cells = [];
@@ -40,11 +47,17 @@ export const computeLayout = (data, columns) => {
         return true;
     };
 
-    (Array.isArray(data) ? data : []).forEach((item, index) => {
+    (Array.isArray(data) ? data : []).forEach((rawItem, index) => {
+        const item = rawItem || {};
         // An item wider than the grid is clamped to a full row rather than
         // overflowing it.
         const colSpan = Math.min(columnCount, Math.max(1, Math.floor(item.span) || 1));
         const rowSpan = Math.max(1, Math.floor(item.rowSpan) || 1);
+
+        if (dense) {
+            cursorRow = 0;
+            cursorCol = 0;
+        }
 
         while (true) {
             if (cursorCol + colSpan > columnCount) {
@@ -64,7 +77,7 @@ export const computeLayout = (data, columns) => {
         }
 
         cells.push({
-            item,
+            item: rawItem,
             index,
             row: cursorRow,
             col: cursorCol,

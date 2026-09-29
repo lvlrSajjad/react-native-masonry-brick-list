@@ -1,5 +1,37 @@
 # Changelog
 
+## 2.1.0
+
+No breaking changes. Existing lists lay out as before.
+
+### Added
+
+- `gap` prop: even spacing between cells, with the outer edges kept flush with
+  the container. Replaces margins inside `renderItem`.
+- `dense` prop (and `computeLayout(data, columns, { dense })`): backfills holes
+  left by larger items, like CSS `grid-auto-flow: dense`.
+- `onEndReached` / `onEndReachedThreshold` for infinite scroll. Fires once per
+  content height, and also when the first page doesn't fill the screen.
+- `ListEmptyComponent`, rendered in place of the grid when `data` is empty.
+- `ref` is forwarded to the underlying `ScrollView`, for `scrollTo` and friends.
+- `renderItem` receives the placed cell (`{ row, col, colSpan, rowSpan }`) as a
+  third argument.
+- `example/` Expo app, which renders the library from source.
+- `llms.txt` and `context7.json`, so coding agents use the API correctly.
+
+### Changed
+
+- The default `rowHeight` is now derived from the grid's measured width, not
+  the window's. Full-width lists are unaffected; lists inside padding or a
+  narrower parent now get square 1×1 cells as intended.
+- Layout is memoized, so a re-render that doesn't change `data`, `columns` or
+  `dense` skips placement.
+
+### Fixed
+
+- A `null` entry in `data` no longer crashes layout; it is placed as a 1×1
+  cell.
+
 ## 2.0.0
 
 First release since 2019. Existing lists lay out exactly as before — the
