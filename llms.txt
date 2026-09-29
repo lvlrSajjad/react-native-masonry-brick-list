@@ -42,6 +42,7 @@ const data = [
 
 ## Docs
 
+- [Live demo](https://lvlrsajjad.github.io/react-native-masonry-brick-list/): the example app running on the web
 - [README](https://github.com/lvlrSajjad/react-native-masonry-brick-list#readme): full props table and recipes
 - [Types](https://github.com/lvlrSajjad/react-native-masonry-brick-list/blob/master/index.d.ts)
 - [Changelog](https://github.com/lvlrSajjad/react-native-masonry-brick-list/blob/master/CHANGELOG.md)

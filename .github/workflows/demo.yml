@@ -1,0 +1,52 @@
+name: Demo
+
+# Builds example/ for the web and deploys it to GitHub Pages:
+#   https://lvlrsajjad.github.io/react-native-masonry-brick-list/
+# The Pages source must be set to "GitHub Actions" (Settings -> Pages).
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - index.js
+      - layout.js
+      - example/**
+      - .github/workflows/demo.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: example
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - run: npm install
+      # baseUrl in app.json puts assets under /react-native-masonry-brick-list/.
+      - run: npx expo export --platform web
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: example/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

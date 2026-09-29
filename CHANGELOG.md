@@ -22,7 +22,9 @@ No breaking changes. Existing lists lay out as before.
 - Development warnings for a `span` wider than `columns` and for the
   unsupported `horizontal` prop. Every warning now prints once instead of on
   each render.
-- `example/` Expo app, which renders the library from source.
+- `example/` Expo app, which renders the library from source. Its web build is
+  deployed to GitHub Pages as a
+  [live demo](https://lvlrsajjad.github.io/react-native-masonry-brick-list/).
 - `llms.txt` and `context7.json`, so coding agents use the API correctly.
 - CI type-checks `index.d.ts` against real React Native types, including
   checks that common misuses are rejected.

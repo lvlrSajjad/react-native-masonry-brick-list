@@ -24,7 +24,8 @@
       "favicon": "./assets/favicon.png"
     },
     "experiments": {
-      "tsconfigPaths": false
+      "tsconfigPaths": false,
+      "baseUrl": "/react-native-masonry-brick-list"
     }
   }
 }

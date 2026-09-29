@@ -111,7 +111,7 @@ export default function App() {
     );
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaProvider style={styles.page}>
             <SafeAreaView style={styles.screen} edges={['top']}>
                 <StatusBar style="dark" />
                 <Pressable onPress={() => listRef.current?.scrollTo({ y: 0 })}>
@@ -148,9 +148,16 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+    page: {
+        backgroundColor: '#F4F1EC',
+    },
+    // Phone-width column, so the web demo doesn't stretch across a desktop
+    // monitor. A no-op on phones.
     screen: {
         flex: 1,
-        backgroundColor: '#F4F1EC',
+        width: '100%',
+        maxWidth: 520,
+        alignSelf: 'center',
     },
     title: {
         fontSize: 28,

@@ -8,6 +8,8 @@ A masonry / staggered grid for React Native, written in pure JS. Items can span
 several columns **and** several rows ("bricks"). No native modules and no
 linking, so it works on iOS, Android, Web and Expo Go.
 
+**[Try the live demo in your browser →](https://lvlrsajjad.github.io/react-native-masonry-brick-list/)**
+
 <img src="https://raw.githubusercontent.com/lvlrSajjad/react-native-masonry-brick-list/master/screen.gif" width="300" alt="BrickList demo: a three-column grid of colored bricks with mixed column and row spans, toggling gap, dense packing and column count, and loading more on scroll">
 
 - **Column and row spans**: `span: 2` makes an item two columns wide,
@@ -229,7 +231,9 @@ const { cells, rows } = computeLayout(data, 3, { dense: false });
 ## Example app
 
 [`example/`](./example) is an Expo app that renders the library straight from
-source. It was used to record the GIF above.
+source. It was used to record the GIF above, and its web build is the
+[live demo](https://lvlrsajjad.github.io/react-native-masonry-brick-list/),
+redeployed on every push to `master`.
 
 ```bash
 cd example
