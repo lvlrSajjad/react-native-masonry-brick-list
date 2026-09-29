@@ -42,9 +42,9 @@ describe('BrickList', () => {
         // 360pt window / 3 columns = 120pt default row height.
         const styles = cellsOf(render()).map((node) => node.props.style);
 
-        expect(styles[0]).toMatchObject({ left: pct(3, 0), top: 0, width: pct(3, 1), height: 120 });
-        expect(styles[1]).toMatchObject({ left: pct(3, 1), top: 0, width: pct(3, 2) });
-        expect(styles[2]).toMatchObject({ left: pct(3, 0), top: 120, width: pct(3, 3) });
+        expect(styles[0]).toMatchObject({ start: pct(3, 0), top: 0, width: pct(3, 1), height: 120 });
+        expect(styles[1]).toMatchObject({ start: pct(3, 1), top: 0, width: pct(3, 2) });
+        expect(styles[2]).toMatchObject({ start: pct(3, 0), top: 120, width: pct(3, 3) });
     });
 
     it('honours rowHeight and rowSpan', () => {
@@ -55,7 +55,7 @@ describe('BrickList', () => {
         const styles = cellsOf(tree).map((node) => node.props.style);
 
         expect(styles[0]).toMatchObject({ top: 0, height: 100 });
-        expect(styles[1]).toMatchObject({ left: pct(3, 1), top: 0, height: 50 });
+        expect(styles[1]).toMatchObject({ start: pct(3, 1), top: 0, height: 50 });
     });
 
     it('gives the grid the full height of its rows', () => {
@@ -141,7 +141,7 @@ describe('BrickList', () => {
         const tree = render({ data: [{ id: 'a', span: 2 }, { id: 'b', span: 2 }, { id: 'c' }], dense: true });
         const styles = cellsOf(tree).map((node) => node.props.style);
 
-        expect(styles[2]).toMatchObject({ left: pct(3, 2), top: 0 });
+        expect(styles[2]).toMatchObject({ start: pct(3, 2), top: 0 });
     });
 
     it('renders ListEmptyComponent only when there is nothing to show', () => {
@@ -210,6 +210,62 @@ describe('BrickList', () => {
 
             expect(scrollView.props.onScroll).toBe(onScroll);
             expect(scrollView.props.scrollEventThrottle).toBeUndefined();
+        });
+    });
+
+    it('positions cells with `start` so the grid mirrors in RTL', () => {
+        const style = cellsOf(render())[1].props.style;
+
+        expect(style.start).toBe(pct(3, 1));
+        expect(style.left).toBeUndefined();
+    });
+
+    it('passes the cell size in points to renderItem', () => {
+        const renderItem = jest.fn(() => null);
+        render({ renderItem, gap: 10, data: [{ id: 'a', span: 2, rowSpan: 2 }] });
+
+        // (360 - 2 * 10) / 3 per column; a 2x2 cell also covers one gap each way.
+        const unit = (360 - 20) / 3;
+        expect(renderItem.mock.calls[0][2]).toMatchObject({
+            colSpan: 2,
+            rowSpan: 2,
+            width: 2 * unit + 10,
+            height: 2 * unit + 10,
+        });
+    });
+
+    it('accepts numColumns as an alias for columns', () => {
+        const styles = cellsOf(render({ numColumns: 2 })).map((node) => node.props.style);
+
+        expect(styles[0]).toMatchObject({ width: pct(2, 1), height: 180 });
+        // `columns` wins when both are given.
+        expect(cellsOf(render({ numColumns: 2, columns: 4 }))[0].props.style.width).toBe(pct(4, 1));
+    });
+
+    describe('development warnings', () => {
+        let warn;
+        beforeEach(() => {
+            global.__DEV__ = true;
+            warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        });
+        afterEach(() => {
+            delete global.__DEV__;
+            warn.mockRestore();
+        });
+
+        it('warns once about an item wider than the grid', () => {
+            const wide = [{ id: 'banner', span: 5 }];
+            render({ data: wide });
+            render({ data: wide });
+
+            const messages = warn.mock.calls.map(([message]) => message);
+            expect(messages.filter((m) => m.includes('"banner" has span 5'))).toHaveLength(1);
+        });
+
+        it('warns that horizontal is not supported', () => {
+            render({ horizontal: true });
+
+            expect(warn).toHaveBeenCalledWith(expect.stringContaining('`horizontal` is not supported'));
         });
     });
 });

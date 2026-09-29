@@ -23,3 +23,19 @@ jobs:
       # would drag in whichever React version the newest RN happens to peer on.
       - run: npm install --legacy-peer-deps
       - run: npm test
+
+  types:
+    # Type-checks index.d.ts against real React Native types by compiling the
+    # example app, including example/api.typecheck.tsx, whose @ts-expect-error
+    # lines fail the job if a misuse ever starts type-checking.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: example
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - run: npm install
+      - run: npm run typecheck

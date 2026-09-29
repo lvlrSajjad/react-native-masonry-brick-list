@@ -14,10 +14,18 @@ No breaking changes. Existing lists lay out as before.
   content height, and also when the first page doesn't fill the screen.
 - `ListEmptyComponent`, rendered in place of the grid when `data` is empty.
 - `ref` is forwarded to the underlying `ScrollView`, for `scrollTo` and friends.
-- `renderItem` receives the placed cell (`{ row, col, colSpan, rowSpan }`) as a
-  third argument.
+- `renderItem` receives the placed cell as a third argument:
+  `{ row, col, colSpan, rowSpan, width, height }`, with the size in points.
+- `numColumns` is accepted as an alias for `columns`, for FlatList familiarity.
+- RTL support: cells are positioned with `start` instead of `left`, so the grid
+  mirrors in right-to-left layouts.
+- Development warnings for a `span` wider than `columns` and for the
+  unsupported `horizontal` prop. Every warning now prints once instead of on
+  each render.
 - `example/` Expo app, which renders the library from source.
 - `llms.txt` and `context7.json`, so coding agents use the API correctly.
+- CI type-checks `index.d.ts` against real React Native types, including
+  checks that common misuses are rejected.
 
 ### Changed
 

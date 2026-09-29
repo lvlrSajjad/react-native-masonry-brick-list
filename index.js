@@ -2,7 +2,17 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { computeLayout } from './layout';
 
-const isDev = typeof __DEV__ !== 'undefined' && __DEV__;
+// Read on each render rather than at import, so tests can flip it.
+const isDev = () => typeof __DEV__ !== 'undefined' && __DEV__;
+
+// Each distinct warning is printed once, not on every render.
+const warned = new Set();
+const warnOnce = (message) => {
+    if (!warned.has(message)) {
+        warned.add(message);
+        console.warn(message);
+    }
+};
 
 const renderExtra = (Component) => {
     if (!Component) {
@@ -21,7 +31,8 @@ const BrickList = React.forwardRef(function BrickList(
     {
         data = [],
         renderItem,
-        columns = 3,
+        columns,
+        numColumns,
         rowHeight,
         gap = 0,
         dense = false,
@@ -40,27 +51,44 @@ const BrickList = React.forwardRef(function BrickList(
     // Width of the grid itself, measured once it has laid out. Until then the
     // window width stands in, which is exact for the common full-width list.
     const [measuredWidth, setMeasuredWidth] = React.useState(null);
-    const columnCount = Math.max(1, Math.floor(columns) || 1);
+    // `numColumns` is accepted for anyone arriving from FlatList.
+    const requestedColumns = columns !== undefined ? columns : numColumns !== undefined ? numColumns : 3;
+    const columnCount = Math.max(1, Math.floor(requestedColumns) || 1);
     const spacing = Math.max(0, Number(gap) || 0);
     const gridWidth = measuredWidth === null ? windowWidth : measuredWidth;
-    const unitHeight =
-        rowHeight === undefined
-            ? Math.max(0, (gridWidth - (columnCount - 1) * spacing) / columnCount)
-            : rowHeight;
+    const unitWidth = Math.max(0, (gridWidth - (columnCount - 1) * spacing) / columnCount);
+    const unitHeight = rowHeight === undefined ? unitWidth : rowHeight;
 
-    if (isDev) {
+    if (isDev()) {
         if (!Array.isArray(data)) {
-            console.warn('BrickList: `data` must be an array, received ' + typeof data + '.');
+            warnOnce('BrickList: `data` must be an array, received ' + typeof data + '.');
         }
         if (typeof renderItem !== 'function') {
-            console.warn('BrickList: `renderItem` must be a function.');
+            warnOnce('BrickList: `renderItem` must be a function.');
         }
-        if (Array.isArray(data) && keyExtractor === defaultKeyExtractor) {
-            const missing = data.some((item) => !item || item.id === undefined || item.id === null);
-            if (missing) {
-                console.warn(
-                    'BrickList: every item needs a unique `id`, or pass a `keyExtractor` prop. ' +
-                        'Falling back to the array index, which breaks reordering.',
+        if (scrollViewProps.horizontal) {
+            warnOnce('BrickList: `horizontal` is not supported; the grid only scrolls vertically.');
+        }
+        if (Array.isArray(data)) {
+            if (keyExtractor === defaultKeyExtractor) {
+                const missing = data.some((item) => !item || item.id === undefined || item.id === null);
+                if (missing) {
+                    warnOnce(
+                        'BrickList: every item needs a unique `id`, or pass a `keyExtractor` prop. ' +
+                            'Falling back to the array index, which breaks reordering.',
+                    );
+                }
+            }
+            const wideIndex = data.findIndex((item) => item && Math.floor(item.span) > columnCount);
+            if (wideIndex !== -1) {
+                warnOnce(
+                    'BrickList: item ' +
+                        JSON.stringify(keyExtractor(data[wideIndex], wideIndex)) +
+                        ' has span ' +
+                        data[wideIndex].span +
+                        ' but there are only ' +
+                        columnCount +
+                        ' columns; it is clamped to a full row.',
                 );
             }
         }
@@ -155,7 +183,8 @@ const BrickList = React.forwardRef(function BrickList(
                                 key={keyExtractor(cell.item, cell.index)}
                                 style={{
                                     position: 'absolute',
-                                    left: pct(cell.col),
+                                    // `start` rather than `left`, so the grid mirrors in RTL.
+                                    start: pct(cell.col),
                                     top: cell.row * pitch,
                                     width: pct(cell.colSpan),
                                     height: cell.rowSpan * pitch,
@@ -163,7 +192,11 @@ const BrickList = React.forwardRef(function BrickList(
                                 }}
                             >
                                 {typeof renderItem === 'function'
-                                    ? renderItem(cell.item, cell.index, cell)
+                                    ? renderItem(cell.item, cell.index, {
+                                          ...cell,
+                                          width: cell.colSpan * unitWidth + (cell.colSpan - 1) * spacing,
+                                          height: cell.rowSpan * unitHeight + (cell.rowSpan - 1) * spacing,
+                                      })
                                     : null}
                             </View>
                         ))}

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import BrickList, { BrickListItem, PlacedCell } from 'react-native-masonry-brick-list';
+import BrickList, { BrickCell, BrickListItem } from 'react-native-masonry-brick-list';
 
 type Brick = BrickListItem & { id: string; color: string };
 
@@ -101,7 +101,7 @@ export default function App() {
         return () => timers.forEach(clearTimeout);
     }, []);
 
-    const renderItem = (item: Brick, index: number, cell: PlacedCell<Brick>) => (
+    const renderItem = (item: Brick, index: number, cell: BrickCell<Brick>) => (
         <View style={[styles.brick, { backgroundColor: item.color }]}>
             <Text style={styles.brickIndex}>{index + 1}</Text>
             <Text style={styles.brickSize}>

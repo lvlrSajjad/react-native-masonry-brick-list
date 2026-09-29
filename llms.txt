@@ -29,15 +29,15 @@ const data = [
 
 ## Key facts
 
-- Default export `BrickList`; named exports `BrickList`, `computeLayout`; types `BrickListItem`, `BrickListProps`, `PlacedCell`, `Layout`, `LayoutOptions`.
-- `renderItem(item, index, cell)` takes positional arguments. It does NOT take FlatList's `({ item, index })` object. `cell` = `{ row, col, colSpan, rowSpan }`.
+- Default export `BrickList`; named exports `BrickList`, `computeLayout`; types `BrickListItem`, `BrickListProps`, `BrickCell`, `PlacedCell`, `Layout`, `LayoutOptions`.
+- `renderItem(item, index, cell)` takes positional arguments. It does NOT take FlatList's `({ item, index })` object. `cell` = `{ row, col, colSpan, rowSpan, width, height }` (width/height in points).
 - Items: `id` (unique key), `span` (columns, default 1, clamped to `columns`), `rowSpan` (rows, default 1).
 - Give the view returned by renderItem `flex: 1` so it fills its cell. Use `gap` for spacing, not margins.
-- Props: `data`, `renderItem`, `columns` (3), `rowHeight` (defaults to one column's width, so 1x1 cells are square), `gap` (0), `dense` (false), `keyExtractor`, `containerStyle`, `ListHeaderComponent`, `ListFooterComponent`, `ListEmptyComponent`, `onEndReached({ distanceFromEnd })`, `onEndReachedThreshold` (0.5).
+- Props: `data`, `renderItem`, `columns` (3; `numColumns` is an alias), `rowHeight` (defaults to one column's width, so 1x1 cells are square), `gap` (0), `dense` (false), `keyExtractor`, `containerStyle`, `ListHeaderComponent`, `ListFooterComponent`, `ListEmptyComponent`, `onEndReached({ distanceFromEnd })`, `onEndReachedThreshold` (0.5).
 - All other props go to the underlying ScrollView (`refreshControl`, `onScroll`, `contentContainerStyle`, ...). `ref` gives you the ScrollView (`ref.current.scrollTo({ y: 0 })`).
 - Placement is row-major and never backfills, so visual order matches data order. `dense` backfills holes like CSS `grid-auto-flow: dense`.
 - Not virtualized: every item mounts. Paginate long feeds with `onEndReached`.
-- Vertical scrolling only.
+- Vertical scrolling only. The grid mirrors automatically in RTL.
 - `computeLayout(data, columns, { dense })` returns `{ cells, rows }` for custom renderers.
 
 ## Docs

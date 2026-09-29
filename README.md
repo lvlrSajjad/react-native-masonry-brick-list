@@ -17,6 +17,7 @@ linking, so it works on iOS, Android, Web and Expo Go.
 - **Infinite scroll**: `onEndReached` and `onEndReachedThreshold`.
 - **Header, footer and empty state**: `ListHeaderComponent`, `ListFooterComponent`, `ListEmptyComponent`.
 - **ScrollView passthrough**: `refreshControl`, `onScroll`, `contentContainerStyle`, and a `ref` for `scrollTo`.
+- **RTL**: the grid mirrors automatically in right-to-left layouts.
 - **TypeScript** types bundled, generic over your item type.
 
 ## Installation
@@ -73,8 +74,8 @@ export default function App() {
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `data` | `Array<object>` | `[]` | Items to render. Each should have a unique `id`. |
-| `renderItem` | `(item, index, cell) => ReactNode` | — | **Required.** Renders one item into its cell. `cell` is `{ row, col, colSpan, rowSpan }`. |
-| `columns` | `number` | `3` | Number of grid columns. |
+| `renderItem` | `(item, index, cell) => ReactNode` | — | **Required.** Renders one item into its cell. `cell` is `{ row, col, colSpan, rowSpan, width, height }`; `width` and `height` are the cell's size in points. |
+| `columns` | `number` | `3` | Number of grid columns. `numColumns` also works, as in FlatList. |
 | `rowHeight` | `number` | one column's width | Height of one grid row, in points. The default keeps 1×1 items square. |
 | `gap` | `number` | `0` | Space between cells, in points. Outer cells stay flush with the container. |
 | `dense` | `boolean` | `false` | Backfill holes left by larger items. Visual order can then differ from data order. |
@@ -144,24 +145,29 @@ const ref = useRef(null);
 ref.current.scrollTo({ y: 0 });
 ```
 
-### Styling by position
+### Styling by position and size
 
 ```jsx
-const renderItem = (item, index, { colSpan, rowSpan }) => (
-    <Card item={item} large={colSpan > 1 || rowSpan > 1} />
+const renderItem = (item, index, { colSpan, rowSpan, width, height }) => (
+    <Card item={item} large={colSpan > 1 || rowSpan > 1} imageSize={{ width, height }} />
 );
 ```
+
+`width` and `height` are the cell's size in points, after `gap`. They're
+handy for asking an image CDN for the right resolution. Before the grid's
+first layout they're based on the window width, and they update once it has
+been measured.
 
 ### TypeScript
 
 ```tsx
-import BrickList, { BrickListItem, PlacedCell } from 'react-native-masonry-brick-list';
+import BrickList, { BrickCell, BrickListItem } from 'react-native-masonry-brick-list';
 
 type Photo = BrickListItem & { id: string; uri: string };
 
 <BrickList<Photo>
     data={photos}
-    renderItem={(photo, index, cell: PlacedCell<Photo>) => <Image source={{ uri: photo.uri }} style={{ flex: 1 }} />}
+    renderItem={(photo, index, cell: BrickCell<Photo>) => <Image source={{ uri: photo.uri }} style={{ flex: 1 }} />}
 />;
 ```
 
@@ -216,6 +222,9 @@ const { cells, rows } = computeLayout(data, 3, { dense: false });
 - The grid is rendered inside a `ScrollView`, so every item is mounted at once.
   For very long lists (thousands of items), paginate with `onEndReached`.
 - The grid only scrolls vertically; `horizontal` is not supported.
+- In development, BrickList warns (once per message) about a non-array `data`,
+  a missing `renderItem`, items without an `id`, a `span` wider than
+  `columns`, and `horizontal`.
 
 ## Example app
 

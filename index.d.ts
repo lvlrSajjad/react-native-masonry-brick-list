@@ -20,6 +20,14 @@ export interface PlacedCell<ItemT> {
     rowSpan: number;
 }
 
+/** What `renderItem` receives as its third argument. */
+export interface BrickCell<ItemT> extends PlacedCell<ItemT> {
+    /** Width of the cell's content box, in points. */
+    width: number;
+    /** Height of the cell's content box, in points. */
+    height: number;
+}
+
 export interface Layout<ItemT> {
     cells: Array<PlacedCell<ItemT>>;
     /** Total number of grid rows the layout occupies. */
@@ -40,11 +48,13 @@ export interface BrickListProps<ItemT extends BrickListItem = BrickListItem>
     data: ReadonlyArray<ItemT>;
     /**
      * Renders a single item into its grid cell. The third argument says where
-     * the item was placed.
+     * the item was placed and how big its cell is in points.
      */
-    renderItem: (item: ItemT, index: number, cell: PlacedCell<ItemT>) => React.ReactNode;
+    renderItem: (item: ItemT, index: number, cell: BrickCell<ItemT>) => React.ReactNode;
     /** Number of grid columns. Defaults to 3. */
     columns?: number;
+    /** Alias for `columns`, for FlatList familiarity. `columns` wins if both are set. */
+    numColumns?: number;
     /**
      * Height of one grid row in points. Defaults to the width of one column,
      * so 1x1 items are square.
